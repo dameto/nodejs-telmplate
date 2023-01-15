@@ -9,76 +9,246 @@ name = input("Author Name: ")
 os.chdir(path)
 
 # Make Project Folder
-os.system('cmd /c "mkdir ' + pName + '"')
+os.mkdir(pName)
 
 # Access Project Folder
 os.chdir('./' + pName)
+
+
+
+
+##################################
+########## ---SERVER--- ##########
+##################################
+
+os.mkdir('server')
+os.chdir('./server')
 
 # >>npm init
 os.system('cmd /c "npm config ls -l"')
 os.system('cmd /c "npm config set init-author-name "' + name + '" -g"')
 os.system('cmd /c "npm config set init-version "' + version + '" -g"')
-os.system('cmd /c "npm config set init-main "server.js" -g"')
+os.system('cmd /c "npm config set entry-point "app.js" -g"')
+os.system('cmd /c "npm config set test-command "nodemon" -g"')
 os.system('cmd /c "npm init -y"')
 
+# modify package.json
+os.remove('package.json')
+with open('package.json', 'w') as fp:
+    fp.write(
+        '{\n'
+            '\t"name": "server",\n'
+            '\t"version": "1.0.0",\n'
+            '\t"description": "",\n'
+            '\t"main": "app.js",\n'
+            '\t"scripts": {\n'
+                '\t\t"dev": "nodemon"\n'
+            '\t},\n'
+            '\t"keywords": [],\n'
+            '\t"author": "",\n'
+            '\t"license": "ISC",\n'
+            '\t"dependencies": {\n'
+                '\t\t"cors": "^2.8.5",\n'
+                '\t\t"express": "^4.18.2"\n'
+            '\t}\n'
+        '}'
+    )
+
+
+# Make Default Folders
+os.mkdir('routes')
+os.mkdir('models')
+os.mkdir('middleware')
+
 # Install Default Modules
-os.system('cmd /c "npm i ejs"')
-os.system('cmd /c "npm i express"')
+os.system('cmd /c "npm i express cors"')
 
-# Make Default Need Folders---
+# Files
+# Create app.js
+with open('app.js', 'w') as fp:
+    fp.write(
+        'const express = require("express")\n'
+        'const cors = require("cors")\n'
+        'const express = require("express")\n'
+        '// const { MONGOURI } = require("./keys")\n\n'
+        
+        'const app = express()\n'
+        'app.use(cors())\n'
+        'app.use(express.json())\n\n'   
+        
+        '/* ----------------------- */\n' 
+        '/* -----CONFIGURATION----- */\n'
+        '/* ----------------------- */\n\n'
 
-# Make "routes" Folder
-os.system('cmd /c "mkdir routes"')
-# Make "models" Folder
-os.system('cmd /c "mkdir models"')
+        '// Database\n'
+        '/* mongoose.set("strictQuery", true);\n'
+        'mongoose.connect(MONGOURI, () => {console.log("Database Connection Acquired")}, {\n'
+            '\tuseNewUrlParser: true,\n'
+            '\tuseUnifiedTopology: true\n'
+        '})*/\n'
+        '// Models\n\n'
+
+        '// Routers\n\n'
+
+        '// Get Public Folder\n'
+        'app.use(express.static(__dirname + "/public/"))\n\n'
+
+        '// Creating Server\n'
+        'const port = process.env.PORT || 8000\n'
+        'app.listen(port, () => console.log(`Listening - Port: ${port}`));\n\n'
+    )
+# Create keys.js
+with open('keys.js', 'w') as fp:
+    fp.write(
+        '/* module.exports={\n'
+            '\tMONGOURI: {key}\n'
+        '} */\n'
+    )
+# Create .gitignore
+with open('.gitignore', 'w') as fp:
+    fp.write(
+        'node_modules'
+    )
 
 
-# Create server.js
-os.system('cmd /c "echo //Modules > server.js"')
-with open('server.js', 'a+') as f:
-    f.write('const express = require("express")\n'
-            'const ejs = require("ejs")\n\n'
+##################################
+########## ---CLIENT--- ##########
+##################################
 
-            'const app = express()\n\n'
-
-            '//Use\n'
-            'app.use(express.urlencoded({ extended: false }))\n\n'
-
-            '//Get Public Folder\n'
-            'app.use(express.static(__dirname + "/public/"))\n\n'
-
-            '//Creating Server\n'
-            'app.use(express.json())\n'
-            'app.set("view engine", "ejs")\n'
-            'const port = process.env.PORT || 7777\n\n'
-
-            '//Listen Port\n'
-            'app.listen(port, () => console.log(`Listening - Port: ${port}`));\n\n'
-
-            '//Home Route\n'
-            'app.get("/", (req, res) => {\n'
-            '   res.render("index.ejs")\n'
-            '})')
-f.close()
-
-
-# PUBLIC-------------------------
-# Make and access "public" Folder
-os.system('cmd /c "mkdir public"')
-os.chdir('./public')
-# Make folders in "public"
-# img
-os.system('cmd /c "mkdir img"')
-# js
-os.system('cmd /c "mkdir js"')
-os.chdir('./js/')
-os.system('cmd /c "echo //... > script.js"')
-# css
 os.chdir('../')
-os.system('cmd /c "mkdir css"')
-os.chdir('./css')
-os.system('cmd /c "echo *{} > master.scss"')
+os.system('cmd /c "npm create vite@latest client -- --template react"')
+os.chdir('./client')
+os.system('cmd /c "npm install"')
+
+os.system('cmd /c "npm i react-router-dom axios"')
+os.system('cmd /c "npm install -D tailwindcss postcss autoprefixer"')
+os.system('cmd /c "npx tailwindcss init -p"')
+
+# modify tailwind.config.cjs
+os.remove('tailwind.config.cjs')
+with open('tailwind.config.cjs', 'w') as fp:
+    fp.write(
+        '/** @type {import("tailwindcss").Config} */\n'
+        'module.exports = {\n'
+            '\tcontent: [\n'
+                '\t\t"./index.html",\n'
+                '\t\t"./src/**/*.{js,ts,jsx,tsx}",\n'
+            '\t],\n'
+            '\ttheme: {\n'
+                '\t\textend: {},\n'
+            '\t},\n'
+            '\tplugins: [],\n'
+        '}\n'
+    )
 
 
-# VIEWS--------------------------
-os.system('cmd /c "mkdir views"')
+
+# Make Default Folders
+os.chdir('./src')
+os.mkdir('routes')
+os.mkdir('components')
+
+
+
+# -Modify src files-
+# delete App.css
+os.remove('App.css')
+
+# modify index.css
+os.remove('index.css')
+with open('index.css', 'w') as fp:
+    fp.write(
+        '@tailwind base;\n'
+        '@tailwind components;\n'
+        '@tailwind utilities;\n\n'
+
+        '* {\n'
+        '\toutline: none;\n'
+        '}\n'
+    )
+
+# modify main.jsx
+os.remove('main.jsx')
+with open('main.jsx', 'w') as fp:
+    fp.write(
+        "import React from 'react'\n"
+        "import ReactDOM from 'react-dom/client'\n"
+        "import App from './App'\n"
+        "import './index.css'\n"
+        "import { BrowserRouter } from 'react-router-dom';\n\n"
+
+        "ReactDOM.createRoot(document.getElementById('root')).render(\n"
+            "\t<React.StrictMode>\n"
+                "\t\t<BrowserRouter>\n"
+                    "\t\t\t<App />\n"
+                "\t\t</BrowserRouter>\n"
+            "\t</React.StrictMode>,\n"
+        ")\n"
+    )
+
+# modify App.jsx
+os.remove('App.jsx')
+with open('App.jsx', 'w') as fp:
+    fp.write(
+        "import { useState } from 'react'\n"
+        "import { Routes, Route } from 'react-router-dom';\n\n"
+
+        "// Components\n\n"
+
+        "// Routes\n"
+        "import Home from './routes/Home';\n\n"
+
+        "function App() {\n"
+            "\treturn (\n"
+                "\t\t<>\n"
+                    "\t\t\t<Routes>\n"
+                        "\t\t\t\t<Route path='/' element={<Home />} />\n"
+                    "\t\t\t</Routes>\n"
+                "\t\t</>\n"
+            "\t)\n"
+        "}\n\n"
+
+        "export default App\n"
+    )
+
+# create axios.js
+with open('axios.js', 'w') as fp:
+    fp.write(
+        'import axios from "axios";\n\n'
+
+        'const instance = axios.create({\n'
+            '\tbaseURL: "http://localhost:8000/"\n'
+        '})\n\n'
+
+        'export default instance;\n'
+    )
+
+
+
+# Home Route
+os.chdir('./routes')
+with open('Home.jsx', 'w') as fp:
+    fp.write(
+        "import { useState } from 'react'\n\n"
+
+        "// Components\n\n"
+
+        "export default function Home() {\n"
+            "\treturn (\n"
+                "\t\t<section className='flex items-start justify-center'>\n"
+                    "\t\t\t<h1>Home</h1>\n"
+                "\t\t</section>\n"
+            "\t)\n"
+        "}\n"
+    )
+
+
+
+# Assets cleanup
+os.chdir('../assets')
+os.remove('react.svg')
+
+# Public cleanup
+os.chdir('../../public')
+os.remove('vite.svg')
+
